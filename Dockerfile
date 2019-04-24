@@ -24,7 +24,7 @@ CMD set -xe \
     done \
     && pacman -Syu --noconfirm --needed \
         ${checkdepends[@]}  $(eval "echo \${checkdepends_$(pacman-conf Architecture)[@]}") \
-        ${depends[@]}  $(eval "echo \${depends_$(pacman-conf Architecture)[@]}") \
+        ${makedepends[@]} $(eval "echo \${makedepends_$(pacman-conf Architecture)[@]}") \
     && if [ -n "$validpgpkeys" ]; then \
         pacman-key --recv-keys ${validpgpkeys[@]}; \
     fi \
@@ -36,7 +36,7 @@ CMD set -xe \
         echo -e "$repo" >> '/etc/aarch64-pacman.conf'; \
     done \
     && aarch64-pacman -Syu --noconfirm --needed \
-        ${makedepends[@]} $(eval "echo \${makedepends_$(aarch64-pacman-conf Architecture)[@]}") \
+        ${depends[@]}  $(eval "echo \${depends_$(aarch64-pacman-conf Architecture)[@]}") \
     && if [ -n "$validpgpkeys_aarch64" ]; then \
         aarch64-pacman-key --recv-keys ${validpgpkeys_aarch64[@]}; \
     fi \
