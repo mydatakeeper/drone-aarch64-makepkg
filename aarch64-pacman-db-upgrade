@@ -1,6 +1,0 @@
-#!/bin/bash
-#
-# /usr/bin/aarch64-pacman-db-upgrade script
-#
-
-/usr/bin/pacman-db-upgrade --config '/etc/aarch64-pacman.conf' "$@"

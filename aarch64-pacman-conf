@@ -1,6 +1,0 @@
-#!/bin/bash
-#
-# /usr/bin/aarch64-pacman-conf script
-#
-
-/usr/bin/pacman-conf --config '/etc/aarch64-pacman.conf' "$@"
