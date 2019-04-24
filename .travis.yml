@@ -1,23 +1,10 @@
 language: bash
 services: docker
-addons:
-  apt:
-    packages:
-    - qemu-user-static
-before_install:
-- sudo update-binfmts --enable qemu-aarch64
 before_script:
-- wget -nv http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz
-- wget -nv http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz.md5
-- wget -nv http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz.sig
-- md5sum -c ArchLinuxARM-aarch64-latest.tar.gz.md5
-- gpg --recv-keys 68B3537F39A313B3E574D06777193F152BDBE6A6
-- gpg --verify ArchLinuxARM-aarch64-latest.tar.gz.sig ArchLinuxARM-aarch64-latest.tar.gz
-- wget -nv https://github.com/multiarch/qemu-user-static/releases/download/v3.1.0-3/qemu-aarch64-static
-  -O qemu-aarch64-static
-- chmod +x qemu-aarch64-static
+- echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
+- sudo service docker restart
 script:
-- docker build -t mydatakeeper/drone-aarch64-makepkg .
+- docker build --squash -t mydatakeeper/drone-aarch64-makepkg .
 deploy:
   provider: script
   script: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
