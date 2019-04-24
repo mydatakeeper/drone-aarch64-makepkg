@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+# /usr/bin/aarch64-pacman-key script
+#
+
+/usr/bin/pacman-key --config '/etc/aarch64-pacman.conf' "$@"

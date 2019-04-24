@@ -1,0 +1,76 @@
+kind: pipeline
+name: deploy
+
+steps:
+- name: makepkg
+  image: mydatakeeper/drone-aarch64-makepkg
+
+- name: sign-pkg
+  image: plugins/gpgsign
+  settings:
+    key:
+      from_secret: gpg_private_key
+    passphrase:
+      from_secret: gpg_passphrase
+    files: '*.pkg.tar.xz'
+    armor: false
+    detach_sign: true
+
+- name: deploy-pkg
+  image: appleboy/drone-scp
+  settings:
+    host: staging.mydatakeeper.fr
+    target: staging.mydatakeeper.fr/shared/public/mydatakeeper/os/aarch64
+    username:
+      from_secret: ssh_username
+    key:
+      from_secret: ssh_key
+    source:
+      - '*.pkg.tar.xz'
+      - '*.pkg.tar.xz.sig'
+
+- name: get-repo-db
+  image: plugins/download
+  settings:
+    source:
+      - https://staging.mydatakeeper.fr/mydatakeeper/os/aarch64/mydatakeeper.db.tar.gz
+
+- name: get-repo-files
+  image: plugins/download
+  settings:
+    source:
+      - https://staging.mydatakeeper.fr/mydatakeeper/os/aarch64/mydatakeeper.files.tar.gz
+
+- name: repo-add
+  image: mydatakeeper/drone-repo-add
+  settings:
+    repo: mydatakeeper
+    files: '*.pkg.tar.xz'
+
+- name: sign-repo
+  image: plugins/gpgsign
+  settings:
+    key:
+      from_secret: gpg_private_key
+    passphrase:
+      from_secret: gpg_passphrase
+    files:
+      - '*.db.tar.gz'
+      - '*.files.tar.gz'
+    armor: false
+    detach_sign: true
+
+- name: deploy-repo
+  image: appleboy/drone-scp
+  settings:
+    host: staging.mydatakeeper.fr
+    target: staging.mydatakeeper.fr/shared/public/mydatakeeper/os/aarch64
+    username:
+      from_secret: ssh_username
+    key:
+      from_secret: ssh_key
+    source:
+      - 'mydatakeeper.db.tar.gz'
+      - 'mydatakeeper.files.tar.gz'
+      - 'mydatakeeper.db.tar.gz.sig'
+      - 'mydatakeeper.files.tar.gz.sig'
