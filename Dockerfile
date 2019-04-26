@@ -6,7 +6,7 @@ RUN set -xe \
         -e 's|^\tstrip |\t\${CROSS_COMPILE}strip |' \
         -e 's|^\t\tobjcopy |\t\t\${CROSS_COMPILE}objcopy |' \
         -i /usr/share/makepkg/tidy/strip.sh \
-    && pacman --noconfirm -Syu --needed sudo base-devel aarch64-linux-gnu-gcc aarch64-linux-gnu-binutils git \
+    && pacman --noconfirm -Syu --needed sudo base-devel aarch64-linux-gnu-gcc aarch64-linux-gnu-binutils git openssh \
     && pacman -Scc --noconfirm
 
 
