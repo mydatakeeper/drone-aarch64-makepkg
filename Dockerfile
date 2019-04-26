@@ -51,4 +51,6 @@ CMD trap 'rm -rf ~/.ssh' HUP INT QUIT ABRT KILL ALRM TERM \
         aarch64-pacman-key --recv-keys ${validpgpkeys_aarch64[@]}; \
     fi \
     && chown alarm -R . \
+    && sudo -u alarm git config --global user.email ${DRONE_COMMIT_AUTHOR_EMAIL} \
+    && sudo -u alarm git config --global user.name ${DRONE_COMMIT_AUTHOR_NAME} \
     && sudo -u alarm aarch64-makepkg --noconfirm --nosign --nodeps
