@@ -29,6 +29,7 @@ CMD trap 'rm -rf ~/.ssh' HUP INT QUIT ABRT KILL ALRM TERM \
         pacman-key --recv-keys "$key" \
         && pacman-key --lsign-key "$key"; \
     done \
+    && echo >> '/etc/pacman.conf' \
     && for repo in $(echo $PLUGIN_REPOS | tr ',' ' '); do \
         echo -e "$repo" >> '/etc/pacman.conf'; \
     done \
@@ -42,6 +43,7 @@ CMD trap 'rm -rf ~/.ssh' HUP INT QUIT ABRT KILL ALRM TERM \
         aarch64-pacman-key --recv-keys "$key" \
         && aarch64-pacman-key --lsign-key "$key"; \
     done \
+    && echo >> '/etc/aarch64-pacman.conf' \
     && for repo in $(echo $PLUGIN_AARCH64_REPOS | tr ',' ' '); do \
         echo -e "$repo" >> '/etc/aarch64-pacman.conf'; \
     done \
