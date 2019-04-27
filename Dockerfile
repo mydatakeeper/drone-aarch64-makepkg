@@ -44,14 +44,13 @@ CMD set -xe \
         aarch64-pacman-key --recv-keys ${validpgpkeys_aarch64[@]}; \
     fi \
     && chown alarm -R . \
+    && sudo -u alarm bash -c 'mkdir ~/.ssh -p' \
     && sudo -u alarm bash -c 'cat > ~/.ssh/known_hosts' <<< "$PLUGIN_KNOWN_HOST" \
     && sudo -u alarm bash -c 'cat > ~/.ssh/id_rsa' <<< "$PLUGIN_DEPLOYMENT_KEY" \
     && sudo -u alarm bash -c '\
-        mkdir ~/.ssh -p \
-        && eval `ssh-agent -s` \
+        eval `ssh-agent -s` \
         && if [ -s ~/.ssh/id_rsa ]; then \
-            chmod 600 ~/.ssh/id_rsa \
-            && ssh-add ~/.ssh/id_rsa; \
+            chmod 600 ~/.ssh/id_rsa && ssh-add ~/.ssh/id_rsa; \
         fi \
     ' \
     && sudo -u alarm git config --global user.email ${DRONE_COMMIT_AUTHOR_EMAIL} \
