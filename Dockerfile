@@ -14,16 +14,7 @@ RUN set -xe \
 COPY aarch64-makepkg /usr/bin/aarch64-makepkg
 COPY aarch64-makepkg.conf /etc/aarch64-makepkg.conf
 
-CMD trap 'rm -rf ~/.ssh' HUP INT QUIT ABRT KILL ALRM TERM \
-    && mkdir ~/.ssh -p \
-    && eval `ssh-agent -s` \
-    && cat > ~/.ssh/known_hosts <<< "$PLUGIN_KNOWN_HOST" \
-    && if [ -n "$PLUGIN_DEPLOYMENT_KEY" ]; then \
-        cat > ~/.ssh/id_rsa <<<  "$PLUGIN_DEPLOYMENT_KEY" \
-        && chmod 600 ~/.ssh/id_rsa \
-        && ssh-add ~/.ssh/id_rsa; \
-    fi \
-    && set -xe \
+CMD set -xe \
     && source ./PKGBUILD \
     && for key in $(echo $PLUGIN_KEYS | tr ',' ' '); do \
         pacman-key --recv-keys "$key" \
@@ -53,6 +44,14 @@ CMD trap 'rm -rf ~/.ssh' HUP INT QUIT ABRT KILL ALRM TERM \
         aarch64-pacman-key --recv-keys ${validpgpkeys_aarch64[@]}; \
     fi \
     && chown alarm -R . \
+    && sudo -u alarm bash -c 'mkdir ~/.ssh -p' \
+    && sudo -u alarm bash -c 'eval `ssh-agent -s`' \
+    && sudo -u alarm bash -c 'cat > ~/.ssh/known_hosts' <<< "$PLUGIN_KNOWN_HOST" \
+    && if [ -n "$PLUGIN_DEPLOYMENT_KEY" ]; then \
+        sudo -u alarm bash -c 'cat > ~/.ssh/id_rsa' <<<  "$PLUGIN_DEPLOYMENT_KEY" \
+        && sudo -u alarm bash -c 'chmod 600 ~/.ssh/id_rsa' \
+        && sudo -u alarm bash -c 'ssh-add ~/.ssh/id_rsa'; \
+    fi \
     && sudo -u alarm git config --global user.email ${DRONE_COMMIT_AUTHOR_EMAIL} \
     && sudo -u alarm git config --global user.name ${DRONE_COMMIT_AUTHOR_NAME} \
     && sudo -u alarm aarch64-makepkg --noconfirm --nosign --nodeps
