@@ -14,8 +14,9 @@ RUN set -xe \
 COPY aarch64-makepkg /usr/bin/aarch64-makepkg
 COPY aarch64-makepkg.conf /etc/aarch64-makepkg.conf
 
+SHELL ["/bin/bash", "-c"]
 CMD set -xe \
-    && source ./PKGBUILD \
+    && source PKGBUILD \
     && for key in $(echo $PLUGIN_KEYS | tr ',' ' '); do \
         pacman-key --recv-keys "$key" \
         && pacman-key --lsign-key "$key"; \
