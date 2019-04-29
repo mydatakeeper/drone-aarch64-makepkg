@@ -45,11 +45,11 @@ CMD set -xe \
         aarch64-pacman-key --recv-keys ${validpgpkeys_aarch64[@]}; \
     fi \
     && chown alarm -R . \
-    && sudo -u alarm bash -c 'mkdir ~/.ssh -p' \
-    && sudo -u alarm bash -c 'cat > ~/.ssh/known_hosts' <<< "$PLUGIN_KNOWN_HOST" \
-    && sudo -u alarm bash -c 'cat > ~/.ssh/id_rsa' <<< "$PLUGIN_DEPLOYMENT_KEY" \
-    && sudo -u alarm bash -c '\
-        eval `ssh-agent -s` \
+    && sudo --preserve-env=PLUGIN_KNOWN_HOST,PLUGIN_DEPLOYMENT_KEY -u alarm bash -c '\
+        mkdir ~/.ssh -p \
+        && echo -n "$PLUGIN_KNOWN_HOST" > ~/.ssh/known_hosts \
+        && echo -n "$PLUGIN_DEPLOYMENT_KEY" > ~/.ssh/id_rsa \
+        && eval `ssh-agent -s` \
         && if [ -s ~/.ssh/id_rsa ]; then \
             chmod 600 ~/.ssh/id_rsa && ssh-add ~/.ssh/id_rsa; \
         fi \
