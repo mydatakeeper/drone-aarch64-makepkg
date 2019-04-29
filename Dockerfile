@@ -9,7 +9,6 @@ RUN set -xe \
     && pacman --noconfirm -Syu --needed sudo base-devel aarch64-linux-gnu-gcc aarch64-linux-gnu-binutils git openssh \
     && pacman -Scc --noconfirm
 
-
 # Add aarch64 cross-makepkg tools
 COPY aarch64-makepkg /usr/bin/aarch64-makepkg
 COPY aarch64-makepkg.conf /etc/aarch64-makepkg.conf
@@ -45,7 +44,8 @@ CMD set -xe \
         aarch64-pacman-key --recv-keys ${validpgpkeys_aarch64[@]}; \
     fi \
     && chown alarm -R . \
-    && sudo --preserve-env=PLUGIN_KNOWN_HOST,PLUGIN_DEPLOYMENT_KEY -u alarm bash -c '\
+    && export PLUGIN_KNOWN_HOST PLUGIN_DEPLOYMENT_KEY DRONE_COMMIT_AUTHOR_EMAIL DRONE_COMMIT_AUTHOR_NAME \
+    && sudo --preserve-env=PLUGIN_KNOWN_HOST,PLUGIN_DEPLOYMENT_KEY,DRONE_COMMIT_AUTHOR_EMAIL,DRONE_COMMIT_AUTHOR_NAME -u alarm bash -c '\
         mkdir ~/.ssh -p \
         && echo -n "$PLUGIN_KNOWN_HOST" > ~/.ssh/known_hosts \
         && echo -n "$PLUGIN_DEPLOYMENT_KEY" > ~/.ssh/id_rsa \
@@ -53,7 +53,7 @@ CMD set -xe \
         && if [ -s ~/.ssh/id_rsa ]; then \
             chmod 600 ~/.ssh/id_rsa && ssh-add ~/.ssh/id_rsa; \
         fi \
-    ' \
-    && sudo -u alarm git config --global user.email ${DRONE_COMMIT_AUTHOR_EMAIL} \
-    && sudo -u alarm git config --global user.name ${DRONE_COMMIT_AUTHOR_NAME} \
-    && sudo -u alarm aarch64-makepkg --noconfirm --nosign --nodeps
+        && git config --global user.email "$DRONE_COMMIT_AUTHOR_EMAIL" \
+        && git config --global user.name "$DRONE_COMMIT_AUTHOR_NAME" \
+        && aarch64-makepkg --noconfirm --nosign --nodeps \
+    '
