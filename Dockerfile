@@ -47,8 +47,8 @@ CMD set -xe \
     && export PLUGIN_KNOWN_HOST PLUGIN_DEPLOYMENT_KEY DRONE_COMMIT_AUTHOR_EMAIL DRONE_COMMIT_AUTHOR_NAME \
     && sudo --preserve-env=PLUGIN_KNOWN_HOST,PLUGIN_DEPLOYMENT_KEY,DRONE_COMMIT_AUTHOR_EMAIL,DRONE_COMMIT_AUTHOR_NAME -u alarm bash -c '\
         mkdir ~/.ssh -p \
-        && printf %s "$PLUGIN_KNOWN_HOST" > ~/.ssh/known_hosts \
-        && printf %s "$PLUGIN_DEPLOYMENT_KEY" > ~/.ssh/id_rsa \
+        && printf "%s\n" "$PLUGIN_KNOWN_HOST" > ~/.ssh/known_hosts \
+        && printf "%s\n" "$PLUGIN_DEPLOYMENT_KEY" > ~/.ssh/id_rsa \
         && eval `ssh-agent -s` \
         && if [ -s ~/.ssh/id_rsa ]; then \
             chmod 600 ~/.ssh/id_rsa && ssh-add ~/.ssh/id_rsa; \
