@@ -47,11 +47,12 @@ CMD set -xe \
     && export PLUGIN_KNOWN_HOST PLUGIN_DEPLOYMENT_KEY DRONE_COMMIT_AUTHOR_EMAIL DRONE_COMMIT_AUTHOR_NAME \
     && sudo --preserve-env=PLUGIN_KNOWN_HOST,PLUGIN_DEPLOYMENT_KEY,DRONE_COMMIT_AUTHOR_EMAIL,DRONE_COMMIT_AUTHOR_NAME -u alarm bash -c '\
         mkdir ~/.ssh -p \
-        && printf "%s\n" "$PLUGIN_KNOWN_HOST" > ~/.ssh/known_hosts \
-        && printf "%s\n" "$PLUGIN_DEPLOYMENT_KEY" > ~/.ssh/id_rsa \
         && eval `ssh-agent -s` \
-        && if [ -s ~/.ssh/id_rsa ]; then \
-            chmod 600 ~/.ssh/id_rsa && ssh-add ~/.ssh/id_rsa; \
+        && cat > ~/.ssh/known_hosts <<< "$PLUGIN_KNOWN_HOST" \
+        && if [ -n "$PLUGIN_DEPLOYMENT_KEY" ]; then \
+            cat > ~/.ssh/id_rsa <<<  "$PLUGIN_DEPLOYMENT_KEY" \
+            && chmod 600 ~/.ssh/id_rsa \
+            && ssh-add ~/.ssh/id_rsa; \
         fi \
         && git config --global user.email "$DRONE_COMMIT_AUTHOR_EMAIL" \
         && git config --global user.name "$DRONE_COMMIT_AUTHOR_NAME" \
