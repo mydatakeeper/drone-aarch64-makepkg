@@ -1,15 +1,14 @@
 FROM mydatakeeper/aarch64-archlinux
 
-# Update x86_64 archlinux image
 RUN set -xe \
     && sed \
         -e 's|^\tstrip |\t\${CROSS_COMPILE}strip |' \
         -e 's|^\t\tobjcopy |\t\t\${CROSS_COMPILE}objcopy |' \
         -i /usr/share/makepkg/tidy/strip.sh \
-    && pacman --noconfirm -Syu --needed sudo base-devel aarch64-linux-gnu-gcc aarch64-linux-gnu-binutils git openssh \
-    && pacman -Scc --noconfirm
+    && pacman --noconfirm -Syu --needed sudo base-devel git openssh \
+    && pacman --noconfirm -Syudd aarch64-linux-gnu-gcc aarch64-linux-gnu-binutils --overwrite=/usr/aarch64-linux-gnu/{bin,lib} \
+    && pacman --noconfirm -Scc
 
-# Add aarch64 cross-makepkg tools
 COPY aarch64-makepkg /usr/bin/aarch64-makepkg
 COPY aarch64-makepkg.conf /etc/aarch64-makepkg.conf
 
