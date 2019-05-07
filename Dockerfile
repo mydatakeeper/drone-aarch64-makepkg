@@ -15,6 +15,7 @@ RUN set -xe \
     && ln -s usr/lib /usr/aarch64-linux-gnu/lib \
     && ln -s usr/lib64 /usr/aarch64-linux-gnu/lib \
     && pacman --noconfirm -Scc \
+    && aarch64-pacman --noconfirm -Syu \
     && aarch64-pacman --noconfirm -Syudd --dbonly gcc binutils \
     && aarch64-pacman --noconfirm -Scc
 
