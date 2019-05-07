@@ -7,6 +7,11 @@ RUN set -xe \
         -i /usr/share/makepkg/tidy/strip.sh \
     && pacman --noconfirm -Syu --needed sudo base-devel git openssh \
     && pacman --noconfirm -Syudd aarch64-linux-gnu-gcc aarch64-linux-gnu-binutils --overwrite=/usr/aarch64-linux-gnu/{bin,lib} \
+    && mv /usr/aarch64-linux-gnu/bin/* /usr/aarch64-linux-gnu/usr/bin/ \
+    && mv /usr/aarch64-linux-gnu/lib/* /usr/aarch64-linux-gnu/usr/lib/ \
+    && rm -rf /usr/aarch64-linux-gnu/{bin,lib} \
+    && ln -s usr/bin /usr/aarch64-linux-gnu/bin \
+    && ln -s usr/lib /usr/aarch64-linux-gnu/lib \
     && pacman --noconfirm -Scc
 
 COPY aarch64-makepkg /usr/bin/aarch64-makepkg
