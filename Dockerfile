@@ -32,7 +32,7 @@ CMD set -xe \
     && for repo in $(echo $PLUGIN_REPOS | tr ',' ' '); do \
         echo -e "$repo" >> '/etc/pacman.conf'; \
     done \
-    && pacman -Syu --noconfirm --needed \
+    && yes | pacman -Syu --needed \
         ${checkdepends[@]} $(eval "echo \${checkdepends_$(pacman-conf Architecture)[@]}") \
         ${makedepends[@]} $(eval "echo \${makedepends_$(pacman-conf Architecture)[@]}") \
     && if [ -n "$validpgpkeys" ]; then \
@@ -46,7 +46,7 @@ CMD set -xe \
     && for repo in $(echo $PLUGIN_AARCH64_REPOS | tr ',' ' '); do \
         echo -e "$repo" >> '/etc/aarch64-pacman.conf'; \
     done \
-    && aarch64-pacman -Syu --noconfirm --needed \
+    && yes | aarch64-pacman -Syu --needed \
         ${depends[@]} $(eval "echo \${depends_$(aarch64-pacman-conf Architecture)[@]}") \
         $(eval "echo \${checkdepends_$(aarch64-pacman-conf Architecture)[@]}") \
         $(eval "echo \${makedepends_$(aarch64-pacman-conf Architecture)[@]}") \
