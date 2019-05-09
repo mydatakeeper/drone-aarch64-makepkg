@@ -36,9 +36,6 @@ CMD set -xe \
     && yes | pacman -Syu --needed \
         ${checkdepends[@]} $(eval "echo \${checkdepends_$(pacman-conf Architecture)[@]}") \
         ${makedepends[@]} $(eval "echo \${makedepends_$(pacman-conf Architecture)[@]}") \
-    && if [ -n "$validpgpkeys" ]; then \
-        gpg --recv-keys ${validpgpkeys[@]}; \
-    fi \
     && for key in $(echo $PLUGIN_AARCH64_KEYS | tr ',' ' '); do \
         aarch64-pacman-key --recv-keys "$key" \
         && aarch64-pacman-key --lsign-key "$key"; \
@@ -52,8 +49,8 @@ CMD set -xe \
         $(eval "echo \${checkdepends_$(aarch64-pacman-conf Architecture)[@]}") \
         $(eval "echo \${makedepends_$(aarch64-pacman-conf Architecture)[@]}") \
     && chown alarm -R . \
-    && export PLUGIN_KNOWN_HOST PLUGIN_DEPLOYMENT_KEY DRONE_COMMIT_AUTHOR_EMAIL DRONE_COMMIT_AUTHOR_NAME \
-    && sudo --preserve-env=PLUGIN_KNOWN_HOST,PLUGIN_DEPLOYMENT_KEY,DRONE_COMMIT_AUTHOR_EMAIL,DRONE_COMMIT_AUTHOR_NAME -u alarm bash -c '\
+    && export PLUGIN_KNOWN_HOST PLUGIN_DEPLOYMENT_KEY DRONE_COMMIT_AUTHOR_EMAIL DRONE_COMMIT_AUTHOR_NAME validpgpkeys \
+    && sudo --preserve-env=PLUGIN_KNOWN_HOST,PLUGIN_DEPLOYMENT_KEY,DRONE_COMMIT_AUTHOR_EMAIL,DRONE_COMMIT_AUTHOR_NAME,validpgpkeys -u alarm bash -c '\
         mkdir ~/.ssh -p \
         && eval `ssh-agent -s` \
         && cat > ~/.ssh/known_hosts <<< "$PLUGIN_KNOWN_HOST" \
@@ -64,5 +61,8 @@ CMD set -xe \
         fi \
         && git config --global user.email "$DRONE_COMMIT_AUTHOR_EMAIL" \
         && git config --global user.name "$DRONE_COMMIT_AUTHOR_NAME" \
+        && if [ -n "$validpgpkeys" ]; then \
+            gpg --recv-keys ${validpgpkeys[@]}; \
+        fi \
         && aarch64-makepkg --noconfirm --nosign --nodeps \
     '
