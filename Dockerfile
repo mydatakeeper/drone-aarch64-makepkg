@@ -5,7 +5,7 @@ RUN set -xe \
         -e 's|^\tstrip |\t\${CROSS_COMPILE}strip |' \
         -e 's|^\t\tobjcopy |\t\t\${CROSS_COMPILE}objcopy |' \
         -i /usr/share/makepkg/tidy/strip.sh \
-    && pacman --noconfirm -Syu --needed sudo base-devel git openssh \
+    && pacman --noconfirm -Syu --needed sudo base-devel git openssh gnupg \
     && pacman --noconfirm -Syudd aarch64-linux-gnu-gcc aarch64-linux-gnu-binutils --overwrite=/usr/aarch64-linux-gnu/{bin,lib} \
     && mv /usr/aarch64-linux-gnu/bin/* /usr/aarch64-linux-gnu/usr/bin/ \
     && mv /usr/aarch64-linux-gnu/lib/* /usr/aarch64-linux-gnu/usr/lib/ \
@@ -37,7 +37,7 @@ CMD set -xe \
         ${checkdepends[@]} $(eval "echo \${checkdepends_$(pacman-conf Architecture)[@]}") \
         ${makedepends[@]} $(eval "echo \${makedepends_$(pacman-conf Architecture)[@]}") \
     && if [ -n "$validpgpkeys" ]; then \
-        pacman-key --recv-keys ${validpgpkeys[@]}; \
+        gpg --recv-keys ${validpgpkeys[@]}; \
     fi \
     && for key in $(echo $PLUGIN_AARCH64_KEYS | tr ',' ' '); do \
         aarch64-pacman-key --recv-keys "$key" \
@@ -51,9 +51,6 @@ CMD set -xe \
         ${depends[@]} $(eval "echo \${depends_$(aarch64-pacman-conf Architecture)[@]}") \
         $(eval "echo \${checkdepends_$(aarch64-pacman-conf Architecture)[@]}") \
         $(eval "echo \${makedepends_$(aarch64-pacman-conf Architecture)[@]}") \
-    && if [ -n "$validpgpkeys_aarch64" ]; then \
-        aarch64-pacman-key --recv-keys ${validpgpkeys_aarch64[@]}; \
-    fi \
     && chown alarm -R . \
     && export PLUGIN_KNOWN_HOST PLUGIN_DEPLOYMENT_KEY DRONE_COMMIT_AUTHOR_EMAIL DRONE_COMMIT_AUTHOR_NAME \
     && sudo --preserve-env=PLUGIN_KNOWN_HOST,PLUGIN_DEPLOYMENT_KEY,DRONE_COMMIT_AUTHOR_EMAIL,DRONE_COMMIT_AUTHOR_NAME -u alarm bash -c '\
