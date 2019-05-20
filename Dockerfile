@@ -1,5 +1,8 @@
 FROM mydatakeeper/aarch64-archlinux
 
+# Add aarch64 ArchlinuxARM rootfs
+ADD ArchLinuxARM-aarch64-latest.tar.gz /usr/aarch64-linux-gnu
+
 RUN set -xe \
     && sed \
         -e 's|^\tstrip |\t\${CROSS_COMPILE}strip |' \
