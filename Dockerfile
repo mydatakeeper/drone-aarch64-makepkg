@@ -1,25 +1,23 @@
 FROM mydatakeeper/aarch64-archlinux
 
-# Add aarch64 ArchlinuxARM rootfs
-ADD ArchLinuxARM-aarch64-latest.tar.gz /usr/aarch64-linux-gnu
 
 RUN set -xe \
     && sed \
         -e 's|^\tstrip |\t\${CROSS_COMPILE}strip |' \
         -e 's|^\t\tobjcopy |\t\t\${CROSS_COMPILE}objcopy |' \
         -i /usr/share/makepkg/tidy/strip.sh \
-    && pacman --noconfirm -Syu --needed sudo base-devel git openssh gnupg \
-    && pacman --noconfirm -Syudd aarch64-linux-gnu-gcc aarch64-linux-gnu-binutils --overwrite=/usr/aarch64-linux-gnu/{bin,lib} \
+    && pacman --noconfirm -Syu --needed base-devel openssh bzr git mercurial subversion \
+    && pacman --noconfirm -Syudd aarch64-linux-gnu-gcc aarch64-linux-gnu-binutils \
+    && pacman --noconfirm -Scc \
     && mv /usr/aarch64-linux-gnu/bin/* /usr/aarch64-linux-gnu/usr/bin/ \
-    && mv /usr/aarch64-linux-gnu/lib/* /usr/aarch64-linux-gnu/usr/lib/ \
+    && mv /usr/aarch64-linux-gnu/lib/ldscripts /usr/aarch64-linux-gnu/usr/lib/ \
     && mv /usr/aarch64-linux-gnu/lib64/* /usr/aarch64-linux-gnu/usr/lib/ \
     && rm -rf /usr/aarch64-linux-gnu/{bin,lib,lib64} \
-    && ln -s usr/bin /usr/aarch64-linux-gnu/bin \
-    && ln -s usr/lib /usr/aarch64-linux-gnu/lib \
-    && ln -s usr/lib64 /usr/aarch64-linux-gnu/lib \
-    && pacman --noconfirm -Scc \
-    && aarch64-pacman --noconfirm -Syu \
+    && ln -s usr/lib /usr/aarch64-linux-gnu/lib64 \
     && aarch64-pacman --noconfirm -Syudd --dbonly gcc binutils \
+    && aarch64-pacman --noconfirm -Syu --needed  --overwrite='/usr/aarch64-linux-gnu/usr/lib/lib*' gcc-libs \
+    && aarch64-pacman --noconfirm -Syu --needed --noscriptlet gnupg \
+    && aarch64-pacman --noconfirm -Syu --needed base-devel \
     && aarch64-pacman --noconfirm -Scc
 
 COPY aarch64-makepkg /usr/bin/aarch64-makepkg
