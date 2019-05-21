@@ -1,12 +1,6 @@
 language: bash
 services: docker
 before_script:
-- wget -nv http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz
-- wget -nv http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz.md5
-- wget -nv http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz.sig
-- md5sum -c ArchLinuxARM-aarch64-latest.tar.gz.md5
-- gpg --recv-keys 68B3537F39A313B3E574D06777193F152BDBE6A6
-- gpg --verify ArchLinuxARM-aarch64-latest.tar.gz.sig ArchLinuxARM-aarch64-latest.tar.gz
 - echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
 - sudo service docker restart
 script:
