@@ -25,6 +25,14 @@ COPY aarch64-makepkg.conf /etc/aarch64-makepkg.conf
 
 SHELL ["/bin/bash", "-c"]
 CMD set -xe \
+    && mkdir -p /usr/aarch64-linux-gnu/{dev,proc,run,sys,tmp} \
+    && mount proc /usr/aarch64-linux-gnu/proc -t proc -o nosuid,noexec,nodev \
+    && mount sys /usr/aarch64-linux-gnu/sys -t sysfs -o nosuid,noexec,nodev,ro \
+    && mount udev /usr/aarch64-linux-gnu/dev -t devtmpfs -o mode=0755,nosuid \
+    && mount devpts /usr/aarch64-linux-gnu/dev/pts -t devpts -o mode=0620,gid=5,nosuid,noexec \
+    && mount shm /usr/aarch64-linux-gnu/dev/shm -t tmpfs -o mode=1777,nosuid,nodev \
+    && mount /run /usr/aarch64-linux-gnu/run --bind \
+    && mount tmp /usr/aarch64-linux-gnu/tmp -t tmpfs -o mode=1777,strictatime,nodev,nosuid \
     && source PKGBUILD \
     && for key in $(echo $PLUGIN_KEYS | tr ',' ' '); do \
         pacman-key --recv-keys "$key" \
