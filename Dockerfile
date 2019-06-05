@@ -5,6 +5,7 @@ RUN set -xe \
     && sed \
         -e 's|^\tstrip |\t\${CROSS_COMPILE}strip |' \
         -e 's|^\t\tobjcopy |\t\t\${CROSS_COMPILE}objcopy |' \
+        -e 's|^\tLANG=C readelf |\tLANG=C \${CROSS_COMPILE}readelf |g' \
         -i /usr/share/makepkg/tidy/strip.sh \
     && pacman --noconfirm -Syu --needed base-devel openssh bzr git mercurial subversion \
     && pacman --noconfirm -Syudd aarch64-linux-gnu-gcc aarch64-linux-gnu-binutils \
@@ -26,6 +27,7 @@ COPY aarch64-makepkg.conf /etc/aarch64-makepkg.conf
 SHELL ["/bin/bash", "-c"]
 CMD set -xe \
     && mkdir -p /usr/aarch64-linux-gnu/{dev,proc,run,sys,tmp} \
+    && mount --bind /mnt /mnt \
     && mount proc /usr/aarch64-linux-gnu/proc -t proc -o nosuid,noexec,nodev \
     && mount sys /usr/aarch64-linux-gnu/sys -t sysfs -o nosuid,noexec,nodev,ro \
     && mount udev /usr/aarch64-linux-gnu/dev -t devtmpfs -o mode=0755,nosuid \
