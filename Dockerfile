@@ -20,7 +20,7 @@ RUN set -xe \
     && rm -rf /usr/aarch64-linux-gnu/{bin,include,lib,lib64} \
     && ln -s usr/include /usr/aarch64-linux-gnu/include \
     && ln -s usr/lib /usr/aarch64-linux-gnu/lib64 \
-    && aarch64-pacman --noconfirm -Syu --needed --asdeps --overwrite='/usr/aarch64-linux-gnu/*' glibc gcc-libs linux-api-headers \
+    && aarch64-pacman --noconfirm -Syu --needed --asdeps --overwrite='/usr/aarch64-linux-gnu/*' glibc gcc-libs linux-api-headers libnsl \
     && aarch64-pacman --noconfirm -Syu --needed --asdeps bash gmp libmpc mpfr ncurses readline zlib \
     && aarch64-pacman --noconfirm -Syu --needed --asdeps --dbonly gcc binutils \
     && aarch64-pacman --noconfirm -Syu --needed --asdeps --noscriptlet gnupg \
