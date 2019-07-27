@@ -53,8 +53,8 @@ CMD set -xe \
         echo -e "$repo" >> '/etc/pacman.conf'; \
     done \
     && yes | pacman -Syu --needed \
-        ${checkdepends[@]} $(eval "echo \${checkdepends_$(pacman-conf Architecture)[@]}") \
-        ${makedepends[@]} $(eval "echo \${makedepends_$(pacman-conf Architecture)[@]}") \
+        $(grep -P '\tcheckdepends(_x86_64)? =' .SRCINFO | cut -d'=' -f2 | tr -d ' ' | sort | uniq) \
+        $(grep -P '\tmakedepends(_x86_64)? =' .SRCINFO | cut -d'=' -f2 | tr -d ' ' | sort | uniq) \
     && for key in $(echo $PLUGIN_AARCH64_KEYS | tr ',' ' '); do \
         aarch64-pacman-key --recv-keys "$key" \
         && aarch64-pacman-key --lsign-key "$key"; \
@@ -64,9 +64,9 @@ CMD set -xe \
         echo -e "$repo" >> '/etc/aarch64-pacman.conf'; \
     done \
     && yes | aarch64-pacman -Syu --needed \
-        ${depends[@]} $(eval "echo \${depends_$(aarch64-pacman-conf Architecture)[@]}") \
-        $(eval "echo \${checkdepends_$(aarch64-pacman-conf Architecture)[@]}") \
-        $(eval "echo \${makedepends_$(aarch64-pacman-conf Architecture)[@]}") \
+        $(grep -P '\tdepends(_aarch64)? =' .SRCINFO | cut -d'=' -f2 | tr -d ' ' | sort | uniq) \
+        $(grep -P '\tcheckdepends_aarch64 =' .SRCINFO | cut -d'=' -f2 | tr -d ' ' | sort | uniq) \
+        $(grep -P '\tmakedepends_aarch64 =' .SRCINFO | cut -d'=' -f2 | tr -d ' ' | sort | uniq) \
     && chown alarm -R . \
     && export PLUGIN_KNOWN_HOST PLUGIN_DEPLOYMENT_KEY DRONE_COMMIT_AUTHOR_EMAIL DRONE_COMMIT_AUTHOR_NAME VALIDPGPKEYS=${validpgpkeys[@]} \
     && sudo --preserve-env=PLUGIN_KNOWN_HOST,PLUGIN_DEPLOYMENT_KEY,DRONE_COMMIT_AUTHOR_EMAIL,DRONE_COMMIT_AUTHOR_NAME,VALIDPGPKEYS -u alarm bash -c '\
