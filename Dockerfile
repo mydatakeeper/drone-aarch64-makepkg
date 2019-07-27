@@ -7,14 +7,25 @@ RUN set -xe \
         -e 's|^\t\tobjcopy |\t\t\${CROSS_COMPILE}objcopy |' \
         -e 's|^\tLANG=C readelf |\tLANG=C \${CROSS_COMPILE}readelf |g' \
         -i /usr/share/makepkg/tidy/strip.sh \
-    && aarch64-pacman --noconfirm -Syu --needed --noscriptlet gnupg \
+    && pacman --noconfirm -Syu --needed \
+        base-devel openssh bzr git mercurial subversion \
+        aarch64-linux-gnu-gcc aarch64-linux-gnu-binutils \
+        aarch64-linux-gnu-glibc aarch64-linux-gnu-linux-api-headers \
+    && pacman --noconfirm -Scc \
+    && mkdir -p /usr/aarch64-linux-gnu/usr/{bin,include,lib,lib64} \
+    && mv /usr/aarch64-linux-gnu/bin/* /usr/aarch64-linux-gnu/usr/bin \
+    && mv /usr/aarch64-linux-gnu/include/* /usr/aarch64-linux-gnu/usr/include \
+    && mv /usr/aarch64-linux-gnu/lib/* /usr/aarch64-linux-gnu/usr/lib \
+    && mv /usr/aarch64-linux-gnu/lib64/* /usr/aarch64-linux-gnu/usr/lib \
+    && rm -rf /usr/aarch64-linux-gnu/{bin,include,lib,lib64} \
+    && ln -s usr/include /usr/aarch64-linux-gnu/include \
+    && ln -s usr/lib /usr/aarch64-linux-gnu/lib64 \
+    && aarch64-pacman --noconfirm -Syu --needed --asdeps --overwrite='/usr/aarch64-linux-gnu/*' glibc gcc-libs linux-api-headers \
+    && aarch64-pacman --noconfirm -Syu --needed --asdeps bash gmp libmpc mpfr ncurses readline zlib \
+    && aarch64-pacman --noconfirm -Syu --needed --asdeps --dbonly gcc binutils \
+    && aarch64-pacman --noconfirm -Syu --needed --asdeps --noscriptlet gnupg \
     && aarch64-pacman --noconfirm -Syu --needed base-devel \
     && aarch64-pacman --noconfirm -Scc \
-    && ln -s usr/lib /usr/aarch64-linux-gnu/lib64 \
-    && ln -s usr/include /usr/aarch64-linux-gnu/include \
-    && pacman --noconfirm -Syu --needed base-devel openssh bzr git mercurial subversion \
-    && pacman --noconfirm -Syu aarch64-linux-gnu-gcc aarch64-linux-gnu-binutils aarch64-linux-gnu-glibc aarch64-linux-gnu-linux-api-headers \
-    && pacman --noconfirm -Scc \
     && ln -s ../bin/cpp /lib/cpp \
     && ln -s ../bin/cpp /usr/aarch64-linux-gnu/lib/cpp
 
