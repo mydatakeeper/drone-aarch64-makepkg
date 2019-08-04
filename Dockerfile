@@ -1,7 +1,7 @@
 FROM mydatakeeper/aarch64-archlinux
 
-COPY aarch64-linux-gnu-gcc-9.1.0-3-x86_64.pkg.tar.xz /root/aarch64-linux-gnu-gcc-9.1.0-3-x86_64.pkg.tar.xz
-COPY aarch64-linux-gnu-gcc-libs-9.1.0-3-x86_64.pkg.tar.xz /root/aarch64-linux-gnu-gcc-libs-9.1.0-3-x86_64.pkg.tar.xz
+COPY aarch64-linux-gnu-gcc-9.1.0-3-x86_64.pkg.tar.xz /root
+COPY aarch64-linux-gnu-gcc-libs-9.1.0-3-x86_64.pkg.tar.xz /root
 
 RUN set -xe \
     && sed \
@@ -12,8 +12,8 @@ RUN set -xe \
     && pacman --noconfirm -Syu --needed \
         base-devel openssh bzr git mercurial subversion \
     && pacman --noconfirm -U \
-        aarch64-linux-gnu-gcc-9.1.0-3-x86_64.pkg.tar.xz \
-        aarch64-linux-gnu-gcc-libs-9.1.0-3-x86_64.pkg.tar.xz \
+        /root/aarch64-linux-gnu-gcc-9.1.0-3-x86_64.pkg.tar.xz \
+        /root/aarch64-linux-gnu-gcc-libs-9.1.0-3-x86_64.pkg.tar.xz \
     && pacman --noconfirm -Syu --needed \
         aarch64-linux-gnu-binutils \
         aarch64-linux-gnu-glibc \
@@ -30,8 +30,10 @@ RUN set -xe \
     && rm -rf /usr/aarch64-linux-gnu/{bin,include,lib,lib64} \
     && ln -s usr/include /usr/aarch64-linux-gnu/include \
     && ln -s usr/lib /usr/aarch64-linux-gnu/lib64 \
-    && aarch64-pacman --no-confirm -Syu --needed --asdeps tzdata iana-etc filesystem zlib ncurses readline bash gmp mpfr libmpc \
-    && aarch64-pacman --noconfirm -Syu --needed --asdeps --dbonly binutils glibc gcc gcc-libs linux-api-headers \
+    && aarch64-pacman --noconfirm -Syu --needed --asdeps tzdata iana-etc filesystem \
+    && aarch64-pacman --noconfirm -Syu --needed --asdeps --dbonly glibc gcc-libs linux-api-headers \
+    && aarch64-pacman --noconfirm -Syu --needed --asdeps zlib ncurses readline bash gmp mpfr libmpc \
+    && aarch64-pacman --noconfirm -Syu --needed --asdeps --dbonly binutils gcc \
     && aarch64-pacman --noconfirm -Syu --needed --asdeps --noscriptlet gnupg \
     && aarch64-pacman --noconfirm -Syu --needed base-devel \
     && aarch64-pacman --noconfirm -Scc \
