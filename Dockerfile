@@ -20,8 +20,8 @@ RUN set -xe \
         base-devel \
     && aarch64-pacman --noconfirm -Scc \
     && pacman --noconfirm -U --overwrite='/usr/aarch64-linux-gnu/*' \
-        /root/*-x86_64.pkg.tar.xz \
-    && rm -f /root/*-x86_64.pkg.tar.xz \
+        /root/*.pkg.tar.xz \
+    && rm -f /root/*.pkg.tar.xz \
     && mv /usr/aarch64-linux-gnu/bin/* /usr/aarch64-linux-gnu/usr/bin \
     && rm -rf /usr/aarch64-linux-gnu/{bin,include,lib,lib64} \
     && ln -fs usr/bin /usr/aarch64-linux-gnu/bin \
