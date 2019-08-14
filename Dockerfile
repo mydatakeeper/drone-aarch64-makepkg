@@ -35,7 +35,7 @@ RUN set -xe \
     && aarch64-pacman --noconfirm -Syu --needed --asdeps \
         zlib ncurses readline bash gmp mpfr libmpc \
     && aarch64-pacman --noconfirm -Syu --needed --asdeps --dbonly \
-        binutils gcc \
+        binutils gcc gcc-ada gcc-fortran gcc-go gcc-objc \
     && aarch64-pacman --noconfirm -Syu --needed --asdeps --noscriptlet \
         gnupg \
     && aarch64-pacman --noconfirm -Syu --needed \
