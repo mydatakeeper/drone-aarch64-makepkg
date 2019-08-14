@@ -1,11 +1,9 @@
 FROM mydatakeeper/aarch64-archlinux
 
-COPY aarch64-linux-gnu-gcc-9.1.0-3-x86_64.pkg.tar.xz /root
-COPY aarch64-linux-gnu-gcc-ada-9.1.0-3-x86_64.pkg.tar.xz /root
-COPY aarch64-linux-gnu-gcc-fortran-9.1.0-3-x86_64.pkg.tar.xz /root
-COPY aarch64-linux-gnu-gcc-go-9.1.0-3-x86_64.pkg.tar.xz /root
-COPY aarch64-linux-gnu-gcc-libs-9.1.0-3-x86_64.pkg.tar.xz /root
-COPY aarch64-linux-gnu-gcc-objc-9.1.0-3-x86_64.pkg.tar.xz /root
+COPY aarch64-linux-gnu-binutils-2.32-1-x86_64.pkg.tar.xz /root
+COPY aarch64-linux-gnu-gcc-8.3.0-1-x86_64.pkg.tar.xz /root
+COPY aarch64-linux-gnu-glibc-2.29-1-any.pkg.tar.xz /root
+COPY aarch64-linux-gnu-linux-api-headers-5.1-2-any.pkg.tar.xz /root
 
 RUN set -xe \
     && sed \
@@ -15,34 +13,23 @@ RUN set -xe \
         -i /usr/share/makepkg/tidy/strip.sh \
     && pacman --noconfirm -Syu --needed \
         base-devel openssh bzr git mercurial subversion \
-        aarch64-linux-gnu-binutils \
-        aarch64-linux-gnu-glibc \
-        aarch64-linux-gnu-linux-api-headers \
-    && pacman --noconfirm -U \
-        /root/*-x86_64.pkg.tar.xz \
     && pacman --noconfirm -Scc \
-    && rm -f /root/*-x86_64.pkg.tar.xz \
-    && mkdir -p /usr/aarch64-linux-gnu/usr/{bin,include,lib} \
-    && mv /usr/aarch64-linux-gnu/bin/* /usr/aarch64-linux-gnu/usr/bin \
-    && mv /usr/aarch64-linux-gnu/include/* /usr/aarch64-linux-gnu/usr/include \
-    && mv /usr/aarch64-linux-gnu/lib/* /usr/aarch64-linux-gnu/usr/lib \
-    && rm -rf /usr/aarch64-linux-gnu/{bin,include,lib} \
-    && ln -s usr/include /usr/aarch64-linux-gnu/include \
-    && aarch64-pacman --noconfirm -Syu --needed --asdeps \
-        tzdata iana-etc filesystem \
-    && aarch64-pacman --noconfirm -Syu --needed --asdeps --dbonly \
-        glibc gcc-libs linux-api-headers \
-    && aarch64-pacman --noconfirm -Syu --needed --asdeps \
-        zlib ncurses readline bash gmp mpfr libmpc \
-    && aarch64-pacman --noconfirm -Syu --needed --asdeps --dbonly \
-        binutils gcc gcc-ada gcc-fortran gcc-go gcc-objc \
     && aarch64-pacman --noconfirm -Syu --needed --asdeps --noscriptlet \
         gnupg \
     && aarch64-pacman --noconfirm -Syu --needed \
         base-devel \
     && aarch64-pacman --noconfirm -Scc \
-    && ln -s ../bin/cpp /lib/cpp \
-    && ln -s ../bin/cpp /usr/aarch64-linux-gnu/lib/cpp
+    && pacman --noconfirm -U --overwrite='/usr/aarch64-linux-gnu/*' \
+        /root/*-x86_64.pkg.tar.xz \
+    && rm -f /root/*-x86_64.pkg.tar.xz \
+    && mv /usr/aarch64-linux-gnu/bin/* /usr/aarch64-linux-gnu/usr/bin \
+    && rm -rf /usr/aarch64-linux-gnu/{bin,include,lib,lib64} \
+    && ln -fs usr/bin /usr/aarch64-linux-gnu/bin \
+    && ln -fs usr/include /usr/aarch64-linux-gnu/include \
+    && ln -fs usr/lib /usr/aarch64-linux-gnu/lib \
+    && ln -fs usr/lib /usr/aarch64-linux-gnu/lib64 \
+    && ln -fs ../bin/cpp /lib/cpp \
+    && ln -fs ../bin/cpp /usr/aarch64-linux-gnu/lib/cpp
 
 COPY aarch64-makepkg /usr/bin/aarch64-makepkg
 COPY aarch64-makepkg.conf /etc/aarch64-makepkg.conf
