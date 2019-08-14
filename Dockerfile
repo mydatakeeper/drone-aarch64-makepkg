@@ -55,6 +55,7 @@ CMD set -xe \
         echo -e "$repo" >> '/etc/pacman.conf'; \
     done \
     && yes | pacman -Syu --needed \
+        --ignore aarch64-linux-gnu-binutils,aarch64-linux-gnu-gcc,aarch64-linux-gnu-glibc,aarch64-linux-gnu-linux-api-headers \
         $(grep -P '\tcheckdepends(_x86_64)? =' .SRCINFO | cut -d'=' -f2 | tr -d ' ' | sort | uniq) \
         $(grep -P '\tmakedepends(_x86_64)? =' .SRCINFO | cut -d'=' -f2 | tr -d ' ' | sort | uniq) \
     && for key in $(echo $PLUGIN_AARCH64_KEYS | tr ',' ' '); do \
@@ -66,6 +67,7 @@ CMD set -xe \
         echo -e "$repo" >> '/etc/aarch64-pacman.conf'; \
     done \
     && yes | aarch64-pacman -Syu --needed \
+        --ignore binutils,gcc,gcc-libs,glibc,linux-api-headers \
         $(grep -P '\tdepends(_aarch64)? =' .SRCINFO | cut -d'=' -f2 | tr -d ' ' | sort | uniq) \
         $(grep -P '\tcheckdepends_aarch64 =' .SRCINFO | cut -d'=' -f2 | tr -d ' ' | sort | uniq) \
         $(grep -P '\tmakedepends_aarch64 =' .SRCINFO | cut -d'=' -f2 | tr -d ' ' | sort | uniq) \
