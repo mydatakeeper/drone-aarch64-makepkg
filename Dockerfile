@@ -7,37 +7,40 @@ COPY aarch64-linux-gnu-gcc-go-9.1.0-3-x86_64.pkg.tar.xz /root
 COPY aarch64-linux-gnu-gcc-libs-9.1.0-3-x86_64.pkg.tar.xz /root
 COPY aarch64-linux-gnu-gcc-objc-9.1.0-3-x86_64.pkg.tar.xz /root
 
-COPY gcc-9.1.0-2-aarch64.pkg.tar.xz /root
-COPY gcc-ada-9.1.0-2-aarch64.pkg.tar.xz /root
-COPY gcc-fortran-9.1.0-2-aarch64.pkg.tar.xz /root
-COPY gcc-go-9.1.0-2-aarch64.pkg.tar.xz /root
-COPY gcc-libs-9.1.0-2-aarch64.pkg.tar.xz /root
-COPY gcc-objc-9.1.0-2-aarch64.pkg.tar.xz /root
-
 RUN set -xe \
     && sed \
         -e 's|^\tstrip |\t\${CROSS_COMPILE}strip |' \
         -e 's|^\t\tobjcopy |\t\t\${CROSS_COMPILE}objcopy |' \
         -e 's|^\tLANG=C readelf |\tLANG=C \${CROSS_COMPILE}readelf |g' \
         -i /usr/share/makepkg/tidy/strip.sh \
-    && aarch64-pacman --noconfirm -Syu --needed \
-        --asdeps --noscriptlet gnupg \
-    && aarch64-pacman --noconfirm -Syu --needed \
-        base-devel \
-    && aarch64-pacman --noconfirm -U \
-        /root/*-aarch64.pkg.tar.xz \
-    && aarch64-pacman --noconfirm -Scc \
-    && rm -f /root/*-aarch64.pkg.tar.xz \
     && pacman --noconfirm -Syu --needed \
         base-devel openssh bzr git mercurial subversion \
-    && pacman --noconfirm -U --overwrite='/usr/aarch64-linux-gnu/*' \
+        aarch64-linux-gnu-binutils \
+        aarch64-linux-gnu-glibc \
+        aarch64-linux-gnu-linux-api-headers \
+    && pacman --noconfirm -U \
         /root/*-x86_64.pkg.tar.xz \
     && pacman --noconfirm -Scc \
     && rm -f /root/*-x86_64.pkg.tar.xz \
+    && mkdir -p /usr/aarch64-linux-gnu/usr/{bin,include,lib} \
+    && mv /usr/aarch64-linux-gnu/bin/* /usr/aarch64-linux-gnu/usr/bin \
+    && mv /usr/aarch64-linux-gnu/include/* /usr/aarch64-linux-gnu/usr/include \
+    && mv /usr/aarch64-linux-gnu/lib/* /usr/aarch64-linux-gnu/usr/lib \
     && rm -rf /usr/aarch64-linux-gnu/{bin,include,lib} \
-    && ln -s usr/bin /usr/aarch64-linux-gnu/bin \
     && ln -s usr/include /usr/aarch64-linux-gnu/include \
-    && ln -s usr/lib /usr/aarch64-linux-gnu/lib \
+    && aarch64-pacman --noconfirm -Syu --needed --asdeps \
+        tzdata iana-etc filesystem \
+    && aarch64-pacman --noconfirm -Syu --needed --asdeps --dbonly \
+        glibc gcc-libs linux-api-headers \
+    && aarch64-pacman --noconfirm -Syu --needed --asdeps \
+        zlib ncurses readline bash gmp mpfr libmpc \
+    && aarch64-pacman --noconfirm -Syu --needed --asdeps --dbonly \
+        binutils gcc \
+    && aarch64-pacman --noconfirm -Syu --needed --asdeps --noscriptlet \
+        gnupg \
+    && aarch64-pacman --noconfirm -Syu --needed \
+        base-devel \
+    && aarch64-pacman --noconfirm -Scc \
     && ln -s ../bin/cpp /lib/cpp \
     && ln -s ../bin/cpp /usr/aarch64-linux-gnu/lib/cpp
 
