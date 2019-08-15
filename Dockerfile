@@ -28,6 +28,7 @@ RUN set -xe \
     && ln -fs usr/include /usr/aarch64-linux-gnu/include \
     && ln -fs usr/lib /usr/aarch64-linux-gnu/lib \
     && ln -fs usr/lib /usr/aarch64-linux-gnu/lib64 \
+    && ln -fs aarch64-unknown-linux-gnu /usr/aarch64-linux-gnu/include/c++/8.3.0/aarch64-linux-gnu \
     && ln -fs ../bin/cpp /lib/cpp \
     && ln -fs ../bin/cpp /usr/aarch64-linux-gnu/lib/cpp
 
