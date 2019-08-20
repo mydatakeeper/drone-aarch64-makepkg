@@ -51,10 +51,15 @@ CMD set -xe \
         pacman-key --recv-keys "$key" \
         && pacman-key --lsign-key "$key"; \
     done \
-    && echo >> '/etc/pacman.conf' \
-    && for repo in $(echo $PLUGIN_REPOS | tr ',' ' '); do \
-        echo -e "$repo" >> '/etc/pacman.conf'; \
-    done \
+    && (\
+        head -n 70 /etc/pacman.conf \
+        && echo \
+        && for repo in $(echo $PLUGIN_REPOS | tr ',' ' '); do \
+            echo -e "$repo"; \
+        done \
+        && tail -n +71 /etc/pacman.conf \
+    ) > /etc/pacman.conf.new \
+    && mv /etc/pacman.conf.new /etc/pacman.conf\
     && pacman --noconfirm -Syu --needed \
         --ignore aarch64-linux-gnu-binutils,aarch64-linux-gnu-gcc,aarch64-linux-gnu-glibc,aarch64-linux-gnu-linux-api-headers \
         $(grep -P '\tcheckdepends(_x86_64)? =' .SRCINFO | cut -d'=' -f2 | tr -d ' ' | sort | uniq) \
@@ -63,10 +68,15 @@ CMD set -xe \
         aarch64-pacman-key --recv-keys "$key" \
         && aarch64-pacman-key --lsign-key "$key"; \
     done \
-    && echo >> '/etc/aarch64-pacman.conf' \
-    && for repo in $(echo $PLUGIN_AARCH64_REPOS | tr ',' ' '); do \
-        echo -e "$repo" >> '/etc/aarch64-pacman.conf'; \
-    done \
+    && (\
+        head -n 70 /etc/aarch64-pacman.conf \
+        && echo \
+        && for repo in $(echo $PLUGIN_AARCH64_REPOS | tr ',' ' '); do \
+            echo -e "$repo"; \
+        done \
+        && tail -n +71 /etc/aarch64-pacman.conf \
+    ) > /etc/aarch64-pacman.conf.new \
+    && mv /etc/aarch64-pacman.conf.new /etc/aarch64-pacman.conf\
     && aarch64-pacman --noconfirm -Syu --needed \
         --ignore binutils,gcc,gcc-libs,glibc,linux-api-headers \
         $(grep -P '\tdepends(_aarch64)? =' .SRCINFO | cut -d'=' -f2 | tr -d ' ' | sort | uniq) \
