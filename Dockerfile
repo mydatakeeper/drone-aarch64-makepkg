@@ -1,9 +1,9 @@
 FROM mydatakeeper/aarch64-archlinux
 
-COPY aarch64-linux-gnu-binutils-2.32-1-x86_64.pkg.tar.xz /root
-COPY aarch64-linux-gnu-gcc-8.3.0-1-x86_64.pkg.tar.xz /root
-COPY aarch64-linux-gnu-glibc-2.29-1-any.pkg.tar.xz /root
-COPY aarch64-linux-gnu-linux-api-headers-5.1-2-any.pkg.tar.xz /root
+COPY aarch64-linux-gnu-binutils-2.33.1-1-x86_64.pkg.tar.xz /root
+COPY aarch64-linux-gnu-gcc-9.2.0-1-x86_64.pkg.tar.xz /root
+COPY aarch64-linux-gnu-glibc-2.30-1-any.pkg.tar.xz /root
+COPY aarch64-linux-gnu-linux-api-headers-5.3.1-2-any.pkg.tar.xz /root
 
 RUN set -xe \
     && sed \
@@ -12,25 +12,29 @@ RUN set -xe \
         -e 's|^\tLANG=C readelf |\tLANG=C \${CROSS_COMPILE}readelf |g' \
         -i /usr/share/makepkg/tidy/strip.sh \
     && pacman --noconfirm -Syu --needed \
-        base-devel openssh bzr git mercurial subversion \
-    && pacman --noconfirm -Scc \
+        base-devel openssh bzr git mercurial subversion rsync \
     && aarch64-pacman --noconfirm -Syu --needed --asdeps --noscriptlet \
         gnupg \
     && aarch64-pacman --noconfirm -Syu --needed \
-        base-devel \
-    && aarch64-pacman --noconfirm -Scc \
+        base-devel gcc-fortran libnsl \
     && pacman --noconfirm -U --overwrite='/usr/aarch64-linux-gnu/*' \
         /root/*.pkg.tar.xz \
-    && rm -f /root/*.pkg.tar.xz \
-    && mv /usr/aarch64-linux-gnu/bin/* /usr/aarch64-linux-gnu/usr/bin \
-    && rm -rf /usr/aarch64-linux-gnu/{bin,include,lib,lib64} \
+    && rsync -azh /usr/aarch64-linux-gnu/bin/* /usr/aarch64-linux-gnu/usr/bin \
+    && rsync -azh /usr/aarch64-linux-gnu/include/* /usr/aarch64-linux-gnu/usr/include \
+    && rsync -azh /usr/aarch64-linux-gnu/lib/* /usr/aarch64-linux-gnu/usr/lib \
+    && rsync -azh /usr/aarch64-linux-gnu/lib64/* /usr/aarch64-linux-gnu/usr/lib \
+    && rm -rf /usr/aarch64-linux-gnu/{bin,include,lib,lib64,usr/include/c++/*/aarch64-linux-gnu} \
     && ln -fs usr/bin /usr/aarch64-linux-gnu/bin \
     && ln -fs usr/include /usr/aarch64-linux-gnu/include \
     && ln -fs usr/lib /usr/aarch64-linux-gnu/lib \
     && ln -fs usr/lib /usr/aarch64-linux-gnu/lib64 \
-    && ln -fs aarch64-unknown-linux-gnu /usr/aarch64-linux-gnu/include/c++/8.3.0/aarch64-linux-gnu \
+    && ln -fs aarch64-unknown-linux-gnu /usr/aarch64-linux-gnu/include/c++/9.2.0/aarch64-linux-gnu \
     && ln -fs ../bin/cpp /lib/cpp \
-    && ln -fs ../bin/cpp /usr/aarch64-linux-gnu/lib/cpp
+    && ln -fs ../bin/cpp /usr/aarch64-linux-gnu/lib/cpp \
+    && pacman --noconfirm -Rns  rsync \
+    && aarch64-pacman --noconfirm -Scc \
+    && pacman --noconfirm -Scc \
+    && rm -f /root/*.pkg.tar.xz
 
 COPY aarch64-makepkg /usr/bin/aarch64-makepkg
 COPY aarch64-makepkg.conf /etc/aarch64-makepkg.conf
