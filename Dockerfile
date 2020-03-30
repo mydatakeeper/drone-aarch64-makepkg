@@ -11,6 +11,7 @@ RUN set -xe \
         -e 's|^\t\tobjcopy |\t\t\${CROSS_COMPILE}objcopy |' \
         -e 's|^\tLANG=C readelf |\tLANG=C \${CROSS_COMPILE}readelf |g' \
         -i /usr/share/makepkg/tidy/strip.sh \
+    && rm -f /usr/share/libalpm/hooks/package-cleanup.hook \
     && pacman --noconfirm -Syu --needed \
         base-devel openssh bzr git mercurial subversion rsync \
     && aarch64-pacman --noconfirm -Syu --needed --asdeps --noscriptlet \
