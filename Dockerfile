@@ -31,9 +31,7 @@ RUN set -xe \
     && ln -fs aarch64-unknown-linux-gnu /usr/aarch64-linux-gnu/include/c++/9.2.0/aarch64-linux-gnu \
     && ln -fs ../bin/cpp /lib/cpp \
     && ln -fs ../bin/cpp /usr/aarch64-linux-gnu/lib/cpp \
-    && pacman --noconfirm -Rns  rsync \
-    && aarch64-pacman --noconfirm -Scc \
-    && pacman --noconfirm -Scc \
+    && pacman --noconfirm -Rns rsync \
     && rm -f /root/*.pkg.tar.xz
 
 COPY aarch64-makepkg /usr/bin/aarch64-makepkg
